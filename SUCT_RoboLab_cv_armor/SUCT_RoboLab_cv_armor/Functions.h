@@ -24,11 +24,10 @@ void myShold(const cv::Mat &mat1, cv::Mat &mat2, uchar(*tb)(int))
 	cv::LUT(mat1, Table, mat2);
 };
 
-///*
 //p2 p3 p4
 //p5 p1 p6
 //p7 p8 p9
-//*/
+//
 //void mySkeleton(const cv::Mat &input, cv::Mat &output)
 //{
 //	cv::Mat ip = input.clone();
