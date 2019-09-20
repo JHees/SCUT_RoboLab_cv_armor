@@ -3,6 +3,38 @@
 #include <opencv2/opencv.hpp>
 #include <boost/progress.hpp>
 #include <vector>
+#include<math.h>
+class armor
+{
+public:
+	const cv::RotatedRect Rect1;
+	const cv::RotatedRect Rect2;
+	cv::Point2f points[4];
+	float angle;
+public:
+	armor() = default;
+	armor(const cv::RotatedRect&, const cv::RotatedRect&);
+	~armor() = default;
+};
+armor::armor(const cv::RotatedRect& R1, const cv::RotatedRect& R2)
+{
+	cv::Point2f ver[8];
+	R1.points(ver);
+	R2.points(ver+4);
+	points[0] = points[1] = points[2] = points[3] = ver[0];
+	for (int i = 0; i < 8; ++i)
+	{
+		points[0] = cv::Point2f(points[0].x < ver[i].x ? points[0].x : ver[i].x, points[0].y < ver[i].y ? points[0].y : ver[i].y);
+		points[1] = cv::Point2f(points[1].x > ver[i].x ? points[1].x : ver[i].x, points[1].y < ver[i].y ? points[1].y : ver[i].y);
+		points[2] = cv::Point2f(points[2].x > ver[i].x ? points[2].x : ver[i].x, points[2].y > ver[i].y ? points[2].y : ver[i].y);
+		points[3] = cv::Point2f(points[3].x < ver[i].x ? points[3].x : ver[i].x, points[3].y > ver[i].y ? points[3].y : ver[i].y);
+	}
+}
+
+inline double distance(cv::Point p1, cv::Point p2)
+{
+	return std::sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
+}
 void colorReduce(const cv::Mat& input, cv::Mat& output, int div)
 {
 	cv::Mat Table(1, 256, CV_8U);
