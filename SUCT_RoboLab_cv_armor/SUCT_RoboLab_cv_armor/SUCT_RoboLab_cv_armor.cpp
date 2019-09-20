@@ -60,10 +60,10 @@ int main()
 			split(HSV, channels_unB);
 			myShold(channels_unB[0], Hue_unB_sholded, [](int i)->uchar {return TARGET(i) ? 255 : 0; });
 			cv::medianBlur(Hue_unB_sholded, Hue_sholded, 3);
-			myShold(channels_unB[2], Value_unB_sholded, [](int i)->uchar {return i >= 56 &&i<=136 ? 255 : 0; });
+			myShold(channels_unB[2], Value_unB_sholded, [](int i)->uchar {return i >= 40 &&i<=152 ? 255 : 0; });
 			R = Hue_sholded & Value_unB_sholded ;
 
-			cv::morphologyEx(R, R, cv::MORPH_CLOSE, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3), cv::Point(-1, -1)));
+			cv::morphologyEx(R, R, cv::MORPH_CLOSE, cv::getStructuringElement(cv::MORPH_CROSS, cv::Size(3, 3), cv::Point(-1, -1)));
 			//cv::morphologyEx(R, R, cv::MORPH_CLOSE, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3), cv::Point(-1, -1)));
 			std::cout << "morphology: ";
 		}
@@ -85,7 +85,7 @@ int main()
 		std::vector<cv::RotatedRect> rRect,rRect_Tar;
 		for (auto i : contours_Tar)
 		{
-				rRect.push_back(cv::minAreaRect(i));
+			rRect.push_back(cv::minAreaRect(i));
 		}
 		
 		for (auto &i : rRect)
@@ -98,7 +98,7 @@ int main()
 				i.size.width = i.size.height;
 				i.size.height = buf;
 			}
-			if ((i.angle > 0 ? (i.angle > 50 && i.angle < 130) : (-i.angle > 50 && -i.angle < 130)))//&&((i.size.width/i.size.height>2&& i.size.width / i.size.height<3)|| (i.size.height / i.size.width > 2 && i.size.height / i.size.width < 3)))
+			if ((i.angle > 0 ? (i.angle > 44 && i.angle <136) : (-i.angle > 43 && -i.angle < 136)))//&&((i.size.width/i.size.height>2&& i.size.width / i.size.height<3)|| (i.size.height / i.size.width > 2 && i.size.height / i.size.width < 3)))
 			{
 				rRect_Tar.push_back(i);
 			}
@@ -106,7 +106,7 @@ int main()
 			i.points(vertices);
 			for (int j = 0; j < 4; j++)
 			{
-				if ((i.angle > 0 ? (i.angle > 50 && i.angle < 130) : (-i.angle > 50 && -i.angle < 130)))//&&((i.size.width/i.size.height>2&& i.size.width / i.size.height<3)|| (i.size.height / i.size.width > 2 && i.size.height / i.size.width < 3)))
+				//if ((i.angle > 0 ? (i.angle > 50 && i.angle < 130) : (-i.angle > 50 && -i.angle < 130)))//&&((i.size.width/i.size.height>2&& i.size.width / i.size.height<3)|| (i.size.height / i.size.width > 2 && i.size.height / i.size.width < 3)))
 					//line(frame, vertices[j], vertices[(j + 1) % 4], cv::Scalar(179, 245, 222), 1);				
 				line(con, vertices[j], vertices[(j + 1) % 4], cv::Scalar(179, 245, 222), 1);
 			}
@@ -130,12 +130,14 @@ int main()
 					buf = j;
 				}
 			}
-			if (buf != i&& (distance(i->center, buf->center)/(i->size.width+buf->size.width))<4)
+			if (buf != i
+				&& (distance(i->center, buf->center)/(i->size.width+buf->size.width))<4.2
+				&& (i->size.width / buf->size.width < 1.3 && buf->size.width / i->size.width < 1.3))
 			{
-				
+
 				//line(frame, i->center, buf->center, cv::Scalar(0, 255, 0), 1);
 				rRect_match.push_back(armor(*i, *buf));
-				buf->angle = 0;
+					buf->angle = 0;
 			}
 		}
 		for (auto i : rRect_match)
