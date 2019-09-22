@@ -60,11 +60,11 @@ int main()
 			split(HSV, channels_unB);
 			myShold(channels_unB[0], Hue_unB_sholded, [](int i)->uchar {return TARGET(i) ? 255 : 0; });
 			cv::medianBlur(Hue_unB_sholded, Hue_sholded, 3);
-			myShold(channels_unB[2], Value_unB_sholded, [](int i)->uchar {return i >= 40 &&i<=152 ? 255 : 0; });
+			myShold(channels_unB[2], Value_unB_sholded, [](int i)->uchar {return i >= 120 ? 255 : 0; });
 			R = Hue_sholded & Value_unB_sholded ;
 
 			cv::morphologyEx(R, R, cv::MORPH_CLOSE, cv::getStructuringElement(cv::MORPH_CROSS, cv::Size(3, 3), cv::Point(-1, -1)));
-			//cv::morphologyEx(R, R, cv::MORPH_CLOSE, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3), cv::Point(-1, -1)));
+			cv::morphologyEx(R, R, cv::MORPH_CLOSE, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3), cv::Point(-1, -1)));
 			std::cout << "morphology: ";
 		}
 		//{
@@ -72,7 +72,7 @@ int main()
 			cv::findContours(R, contours, hierarchy, cv::RETR_CCOMP, cv::CHAIN_APPROX_TC89_L1);
 			for (std::vector<cv::Vec4i>::iterator i = hierarchy.begin(); i != hierarchy.end(); ++i)
 			{
-				if (i->val[0] == -1 && i->val[1] == -1 && i->val[2] == -1 && i->val[3] != -1)
+				if (i->val[2] == -1 && i->val[3] == -1)
 				{
 					contours_Tar.push_back(contours[std::distance(hierarchy.begin(), i)]);
 				}
@@ -118,21 +118,21 @@ int main()
 			if (i->angle == 0)
 				continue;
 			float ang = 0.5;
-			int dis = 100;
+			int dis = 150;
 			auto buf = i;
 			for (auto j = i + 1; j != rRect_Tar.end(); ++j)
 			{
-				if (dis > distance(i->center, j->center))
-				if (ang > (abs((i->center.y - j->center.y) / (i->center.x - j->center.x))))
+				if (dis > distance(i->center, j->center)
+					&& ang > (abs((i->center.y - j->center.y) / (i->center.x - j->center.x)))
+					&& (distance(i->center, j->center) / (i->size.width + j->size.width)) < 5
+					&& (i->size.width / j->size.width < 1.3 && j->size.width / i->size.width < 1.3))
 				{
 					ang = (abs((i->center.y - j->center.y) / (i->center.x - j->center.x)));
 					dis = distance(i->center, j->center);
 					buf = j;
 				}
 			}
-			if (buf != i
-				&& (distance(i->center, buf->center)/(i->size.width+buf->size.width))<4.2
-				&& (i->size.width / buf->size.width < 1.3 && buf->size.width / i->size.width < 1.3))
+			if (buf != i)
 			{
 
 				//line(frame, i->center, buf->center, cv::Scalar(0, 255, 0), 1);
