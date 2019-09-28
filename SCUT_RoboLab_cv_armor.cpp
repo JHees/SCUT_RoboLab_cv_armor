@@ -186,7 +186,7 @@ int main()
 		}
 		std::cout << "global time: " << g_time.elapsed() << std::endl;;
 		std::cout << n ;
-		cv::waitKey(100);
+		cv::waitKey(1);
 	}
 }
 
