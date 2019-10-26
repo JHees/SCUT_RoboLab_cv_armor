@@ -61,5 +61,7 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp"
-    }
+    },
+    "C_Cpp.default.configurationProvider": "go2sh.cmake-integration",
+    "python.pythonPath": "/home/jhees/.pyenv/versions/3.6.0/bin/python"
 }

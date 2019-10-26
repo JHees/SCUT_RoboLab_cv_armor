@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-set(CMAKE_BUILD_TYPE Release)
+
 project(SCUT_RoboLab_cv_armor)
 
 find_package(OpenCV REQUIRED)
