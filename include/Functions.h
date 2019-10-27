@@ -4,32 +4,6 @@
 #include <boost/progress.hpp>
 #include <vector>
 #include<math.h>
-class armor
-{
-public:
-	const cv::RotatedRect Rect1;
-	const cv::RotatedRect Rect2;
-	cv::Point2f points[4];
-	float angle;
-public:
-	armor() = default;
-	armor(const cv::RotatedRect&, const cv::RotatedRect&);
-	~armor() = default;
-};
-armor::armor(const cv::RotatedRect& R1, const cv::RotatedRect& R2)
-{
-	cv::Point2f ver[8];
-	R1.points(ver);
-	R2.points(ver+4);
-	points[0] = points[1] = points[2] = points[3] = ver[0];
-	for (int i = 0; i < 8; ++i)
-	{
-		points[0] = cv::Point2f(points[0].x < ver[i].x ? points[0].x : ver[i].x, points[0].y < ver[i].y ? points[0].y : ver[i].y);
-		points[1] = cv::Point2f(points[1].x > ver[i].x ? points[1].x : ver[i].x, points[1].y < ver[i].y ? points[1].y : ver[i].y);
-		points[2] = cv::Point2f(points[2].x > ver[i].x ? points[2].x : ver[i].x, points[2].y > ver[i].y ? points[2].y : ver[i].y);
-		points[3] = cv::Point2f(points[3].x < ver[i].x ? points[3].x : ver[i].x, points[3].y > ver[i].y ? points[3].y : ver[i].y);
-	}
-}
 
 inline double distance(cv::Point p1, cv::Point p2)
 {
@@ -56,6 +30,10 @@ void myShold(const cv::Mat &mat1, cv::Mat &mat2, uchar(*tb)(int))
 	cv::LUT(mat1, Table, mat2);
 };
 
+ bool operator<(cv::Vec3f n1,cv::Vec3f n2)
+{
+	return n1.val[0]<n2.val[0];
+}
 //p2 p3 p4
 //p5 p1 p6
 //p7 p8 p9
